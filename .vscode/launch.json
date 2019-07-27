@@ -12,7 +12,8 @@
             "console": "integratedTerminal",
             "args": [
                 "--image",
-                "images/full.PNG"
+                // "images/example.jpg"
+                "images/final.PNG"
             ]
         }
     ]
