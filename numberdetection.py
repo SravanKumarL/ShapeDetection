@@ -20,8 +20,9 @@ import cv2
 
 
 def numberDetection(image, ref):
+    ref = cv2.imread(ref)
     ref = cv2.cvtColor(ref, cv2.COLOR_BGR2GRAY)
-    ref = cv2.threshold(ref, 10, 255, cv2.THRESH_BINARY_INV)[1]
+    # ref = cv2.threshold(ref, 10, 255, cv2.THRESH_BINARY_INV)[1]
     # find contours in the OCR-A image (i.e,. the outlines of the digits)
     # sort them from left to right, and initialize a dictionary to map
     # digit name to the ROI

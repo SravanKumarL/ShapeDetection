@@ -65,13 +65,14 @@ def thresh_callback(threshold, src_gray):
     def checkForRectangleContour(c):
         minCriteria = len(c) == 4 and cv.contourArea(c) > 100
         return minCriteria
+
     contours_poly = list(
         filter(lambda contour: checkForRectangleContour(contour), contours_poly))
     color = (0, 255, 0)
 
     # cv.drawContours(drawing,  minEllipse, 5, color, 1)
     # for i, c in enumerate(contours):
-    cv.drawContours(src_gray,  contours_poly, 4, color, 1)
+    # cv.drawContours(src_gray,  contours_poly, 4, color, 1)
     # if c.shape[0] > 5 and (minEllipse[i] is not None):
     #     minEllipse[i] = (minEllipse[i][0], tuple(i/2 for i in minEllipse[i][1]),
     #                      minEllipse[i][2])
@@ -82,14 +83,11 @@ def thresh_callback(threshold, src_gray):
     #     centers[i][1])), int(radius[i]), color, 2)
     # [forContour]
 
-    # [showDrawings]
     # Show in a window
-    cv.imshow('Contours', src_gray)
-    cv.waitKey(0)
-    # return contours_poly
-    # [showDrawings]
-
-
+    # cv.imshow('Contour', src_gray)
+    # cv.waitKey(0)
+    boundingRect = cv.boundingRect(contours_poly[4])
+    return src_gray
 # [setup]
 # Load source image
 # parser = argparse.ArgumentParser(
@@ -99,6 +97,8 @@ def thresh_callback(threshold, src_gray):
 # args = parser.parse_args()
 
 # src = cv.imread(cv.samples.findFile(args.input))
+
+
 def shapeDetection(image):
     src = cv.imread(image)
 
