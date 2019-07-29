@@ -22,7 +22,10 @@ import cv2
 def numberDetection(image, ref):
     ref = cv2.imread(ref)
     ref = cv2.cvtColor(ref, cv2.COLOR_BGR2GRAY)
+    ref = cv2.bitwise_not(ref)
     # ref = cv2.threshold(ref, 10, 255, cv2.THRESH_BINARY_INV)[1]
+    # cv2.imshow('INVERTED REF', ref)
+    # cv2.waitKey(0)
     # find contours in the OCR-A image (i.e,. the outlines of the digits)
     # sort them from left to right, and initialize a dictionary to map
     # digit name to the ROI
@@ -47,11 +50,17 @@ def numberDetection(image, ref):
     sqKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
     # load the input image, resize it, and convert it to grayscale
     # image = cv2.imread(args["image"])
-    image = imutils.resize(image, width=2000, height=1600)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    image = imutils.resize(image, width=800, height=600)
+    image = cv2.filter2D(
+        image, -1, np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]]))
+    blur = cv2.GaussianBlur(image, (5, 5), 0)
+    sharp = cv2.addWeighted(blur, 1.5, image, -0.5, 0)
+    # cv2.imshow('INVERTED REF', sharp)
+    # cv2.waitKey(0)
+    # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     # apply a tophat (whitehat) morphological operator to find light
     # regions against a dark background (i.e., the credit card numbers)
-    tophat = cv2.morphologyEx(gray, cv2.MORPH_TOPHAT, rectKernel)
+    tophat = cv2.morphologyEx(sharp, cv2.MORPH_TOPHAT, rectKernel)
     # compute the Scharr gradient of the tophat image, then scale
     # the rest back into the range [0, 255]
     gradX = cv2.Sobel(tophat, ddepth=cv2.CV_32F, dx=1, dy=0,
@@ -106,7 +115,7 @@ def numberDetection(image, ref):
         # extract the group ROI of 4 digits from the grayscale image,
         # then apply thresholding to segment the digits from the
         # background of the credit card
-        group = gray[gY - 5:gY + gH + 5, gX - 5:gX + gW + 5]
+        group = image[gY - 5:gY + gH + 5, gX - 5:gX + gW + 5]
         group = cv2.threshold(group, 0, 255,
                               cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
 

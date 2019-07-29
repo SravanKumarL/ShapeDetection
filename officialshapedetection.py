@@ -62,17 +62,28 @@ def thresh_callback(threshold, src_gray):
 
     # [forContour]
     # Draw polygonal contour + bounding rects + circles
+    buffer = 5
+
     def checkForRectangleContour(c):
-        minCriteria = len(c) == 4 and cv.contourArea(c) > 100
-        return minCriteria
+        minCriteria = len(c) == 4 and cv.contourArea(c) > 1000
+        c = list(map(lambda v: v[0], c))
+        if(minCriteria):
+            xCheck = abs(c[1][0]-c[2][0]) <= buffer and abs(c[0]
+                                                            [0]-c[3][0]) <= buffer
+            yCheck = abs(c[0][1]-c[1][1]) <= buffer and abs(c[2]
+
+                                                            [1]-c[3][1]) <= buffer
+            return minCriteria and xCheck and yCheck
+        else:
+            return False
 
     contours_poly = list(
         filter(lambda contour: checkForRectangleContour(contour), contours_poly))
-    color = (0, 255, 0)
+    # color = (0, 255, 0)
 
     # cv.drawContours(drawing,  minEllipse, 5, color, 1)
     # for i, c in enumerate(contours):
-    # cv.drawContours(src_gray,  contours_poly, 4, color, 1)
+    # cv.drawContours(src_gray,  contours_poly, -1, color, 1)
     # if c.shape[0] > 5 and (minEllipse[i] is not None):
     #     minEllipse[i] = (minEllipse[i][0], tuple(i/2 for i in minEllipse[i][1]),
     #                      minEllipse[i][2])
@@ -83,11 +94,16 @@ def thresh_callback(threshold, src_gray):
     #     centers[i][1])), int(radius[i]), color, 2)
     # [forContour]
 
+    rectangle = np.reshape(contours_poly[0], (4, 2))
+    x1 = np.min(rectangle, axis=0)[0]
+    (x2, y2) = np.max(rectangle, axis=0)
+    # swapping is needed to translate contours to image coordinates
+    return src_gray[y2:, x1:x2]
     # Show in a window
-    # cv.imshow('Contour', src_gray)
+    # cv.imshow('Contour', src_gray[y2:, x1:x2])
     # cv.waitKey(0)
-    boundingRect = cv.boundingRect(contours_poly[4])
-    return src_gray
+    # boundingRect = cv.boundingRect(contours_poly[0])
+    # return src_gray
 # [setup]
 # Load source image
 # parser = argparse.ArgumentParser(
@@ -115,7 +131,7 @@ def shapeDetection(image):
     # [createWindow]
     # [trackbar]
     max_thresh = 255
-    thresh = 100  # initial threshold
+    thresh = 50  # initial threshold
     # cv.createTrackbar('Canny thresh:', source_window,
     #                   thresh, max_thresh, thresh_callback)
     return thresh_callback(thresh, src_gray)
