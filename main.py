@@ -12,5 +12,5 @@ ap.add_argument("-r", "--reference", required=False,
 args = vars(ap.parse_args())
 image = shapeDetection(args["image"])
 digits = numberDetection(image, args["reference"])
-generatePVDB(digits[0], digits[1])
+# generatePVDB(digits[0], digits[1])
 # generatePVDB(10, 96)

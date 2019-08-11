@@ -3,6 +3,7 @@ import cv2 as cv
 import numpy as np
 import argparse
 import imutils
+from ImageUtils import ShowImage, GetContours, CropRectangleFromImage
 
 print(cv.__version__)
 
@@ -98,7 +99,13 @@ def thresh_callback(threshold, src_gray):
     x1 = np.min(rectangle, axis=0)[0]
     (x2, y2) = np.max(rectangle, axis=0)
     # swapping is needed to translate contours to image coordinates
-    return src_gray[y2:, x1:x2]
+    croppedImg = src_gray[y2:, x1:x2]
+    canniedImage = cv.Canny(croppedImg, threshold, 2*threshold)
+    dimension_line = list(filter(lambda cnt: len(
+        cnt) > 4, GetContours(canniedImage)))[0]
+    digitarea = CropRectangleFromImage(croppedImg, dimension_line)
+    return digitarea
+
     # Show in a window
     # cv.imshow('Contour', src_gray[y2:, x1:x2])
     # cv.waitKey(0)
