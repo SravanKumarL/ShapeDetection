@@ -3,7 +3,12 @@ import imutils
 import numpy as np
 
 
-def ShowImage(image):
+def ShowImage(image, width=None, height=None):
+    isDimSpecified = width is not None and height is not None
+    cv2.namedWindow(
+        'IMAGE', cv2.WINDOW_NORMAL if isDimSpecified else cv2.WINDOW_AUTOSIZE)
+    if isDimSpecified:
+        cv2.resizeWindow('IMAGE', width=width, height=height)
     cv2.imshow('IMAGE', image)
     cv2.waitKey(0)
 
@@ -18,7 +23,7 @@ def GetContours(image, SORT=True):
     return cnts
 
 
-def DrawContour(image, contours=None, cntrIdx=-1, thickness=3):
+def DrawContour(image, contours=None, cntrIdx=-1, thickness=2):
     if contours is None:
         contours = GetContours(image, True)
     cv2.drawContours(image, contours, cntrIdx,
